@@ -7,8 +7,8 @@ namespace CsharpPoker
     {
         private readonly List<Card> _cards = new List<Card>();
         
-        public IEnumerable<Card> Cards
-            => _cards;
+        public IEnumerable<Card> Cards =>
+            _cards;
 
         public Hand Draw(Card card)
         {
@@ -16,21 +16,19 @@ namespace CsharpPoker
             return this;
         }
 
-        public Card HighCard()
-            => _cards.Single(card => card.Value == _cards.Max(c => c.Value));
+        public Card HighCard() =>
+            _cards.Single(card => card.Value == _cards.Max(c => c.Value));
 
-        public HandRank GetHandRank()
-            => HasRoyalFlush() ?
-                HandRank.RoyalFlush
-                : HasFlush() ?
-                    HandRank.Flush
-                    : HandRank.HighCard;
+        public HandRank GetHandRank() =>
+            HasRoyalFlush() ? HandRank.RoyalFlush
+            : HasFlush() ? HandRank.Flush
+            : HandRank.HighCard;
 
-        private bool HasFlush()
-            => Cards.All(c => c.Suit == Cards.First().Suit);
+        private bool HasFlush() =>
+            Cards.All(c => c.Suit == Cards.First().Suit);
 
-        private bool HasRoyalFlush()
-            => HasFlush()
+        private bool HasRoyalFlush() =>
+            HasFlush()
             && Cards.All(c => c.Value > CardValue.Nine);
     }
 }
