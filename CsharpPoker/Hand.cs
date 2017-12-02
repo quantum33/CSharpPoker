@@ -17,18 +17,39 @@ namespace CsharpPoker
         }
 
         public Card HighCard() =>
-            _cards.Single(card => card.Value == _cards.Max(c => c.Value));
+            _cards.Aggregate((a, b) => a.Value > b.Value ? a : b);
 
-        public HandRank GetHandRank() =>
-            HasRoyalFlush() ? HandRank.RoyalFlush
+        public HandRank GetHandRank()
+            => HasRoyalFlush() ? HandRank.RoyalFlush
             : HasFlush() ? HandRank.Flush
+            : HasFullHouse() ? HandRank.FullHouse
+            : HasFourOfAKind() ? HandRank.FourOfAKind
+            : HasThreeOfAKind() ? HandRank.ThreeOfAKind
+            : HasPair() ? HandRank.Pair
             : HandRank.HighCard;
 
-        private bool HasFlush() =>
-            Cards.All(c => c.Suit == Cards.First().Suit);
+        private bool HasFlush()
+            => Cards.All(c => c.Suit == Cards.First().Suit);
 
-        private bool HasRoyalFlush() =>
-            HasFlush()
-            && Cards.All(c => c.Value > CardValue.Nine);
+        private bool HasRoyalFlush()
+            => HasFlush() 
+               && Cards.All(c => c.Value > CardValue.Nine);
+
+        private bool HasPair()
+            => HasManyOfAKind(2);
+
+        private bool HasThreeOfAKind() 
+            => HasManyOfAKind(3);
+
+        private bool HasFourOfAKind() 
+            => HasManyOfAKind(4);
+
+        private bool HasFullHouse() 
+            => HasThreeOfAKind() && HasPair();
+        
+        private bool HasManyOfAKind(int howManyCards)
+            => Cards
+                .GroupBy(card => card.Value)
+                .Any(group => group.Count() == howManyCards);
     }
 }
