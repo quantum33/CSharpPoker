@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace CsharpPoker
@@ -7,8 +8,8 @@ namespace CsharpPoker
     {
         private readonly List<Card> _cards = new List<Card>();
         
-        public IEnumerable<Card> Cards =>
-            _cards;
+        public IEnumerable<Card> Cards
+            => _cards;
 
         public Hand Draw(Card card)
         {
@@ -16,17 +17,19 @@ namespace CsharpPoker
             return this;
         }
 
-        public Card HighCard() =>
-            _cards.Aggregate((a, b) => a.Value > b.Value ? a : b);
+        public Card HighCard()
+            => _cards.Aggregate((a, b) => a.Value > b.Value ? a : b);
 
         public HandRank GetHandRank()
             => HasRoyalFlush() ? HandRank.RoyalFlush
-            : HasFlush() ? HandRank.Flush
-            : HasFullHouse() ? HandRank.FullHouse
-            : HasFourOfAKind() ? HandRank.FourOfAKind
-            : HasThreeOfAKind() ? HandRank.ThreeOfAKind
-            : HasPair() ? HandRank.Pair
-            : HandRank.HighCard;
+                : HasStraightFlush() ? HandRank.StraightFlush
+                : HasStraight() ? HandRank.Straight
+                : HasFlush() ? HandRank.Flush
+                : HasFullHouse() ? HandRank.FullHouse
+                : HasFourOfAKind() ? HandRank.FourOfAKind
+                : HasThreeOfAKind() ? HandRank.ThreeOfAKind
+                : HasPair() ? HandRank.Pair
+                : HandRank.HighCard;
 
         private bool HasFlush()
             => Cards.All(c => c.Suit == Cards.First().Suit);
@@ -51,5 +54,17 @@ namespace CsharpPoker
             => Cards
                 .GroupBy(card => card.Value)
                 .Any(group => group.Count() == howManyCards);
+
+        private bool HasStraight()
+            => _cards.GetMinMaxDifference() == _cards.Count - 1;
+
+        private bool HasStraightFlush()
+            => HasStraight() && HasFlush();
+    }
+
+    internal static class CardListExtensions
+    {
+        internal static int GetMinMaxDifference(this List<Card> cards)
+            => cards.Max(card => card.Value) - cards.Min(card => card.Value);
     }
 }
