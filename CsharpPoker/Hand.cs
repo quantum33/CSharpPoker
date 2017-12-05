@@ -11,25 +11,31 @@ namespace CsharpPoker
         public IEnumerable<Card> Cards
             => _cards;
 
-        public Hand Draw(Card card)
-        {
-            _cards.Add(card);
-            return this;
-        }
+        public void Draw(Card card)
+            => _cards.Add(card);
 
         public Card HighCard()
             => _cards.Aggregate((a, b) => a.Value > b.Value ? a : b);
 
         public HandRank GetHandRank()
-            => HasRoyalFlush() ? HandRank.RoyalFlush
-                : HasStraightFlush() ? HandRank.StraightFlush
-                : HasStraight() ? HandRank.Straight
-                : HasFlush() ? HandRank.Flush
-                : HasFullHouse() ? HandRank.FullHouse
-                : HasFourOfAKind() ? HandRank.FourOfAKind
-                : HasThreeOfAKind() ? HandRank.ThreeOfAKind
-                : HasPair() ? HandRank.Pair
-                : HandRank.HighCard;
+            => Rankings()
+                .OrderByDescending(rule => rule.Rank)
+                .First(r => r.Eval(Cards)).Rank;
+
+        private IEnumerable<Ranker> Rankings()
+            => new List<Ranker>
+            {
+                new Ranker(Cards => HasRoyalFlush(), HandRank.RoyalFlush),
+                new Ranker(Cards => HasStraightFlush(), HandRank.StraightFlush),
+                new Ranker(Cards => HasStraight(), HandRank.Straight),
+                new Ranker(Cards => HasFlush(), HandRank.Flush),
+                new Ranker(Cards => HasFullHouse(), HandRank.FullHouse),
+                new Ranker(Cards => HasFourOfAKind(), HandRank.FourOfAKind),
+                new Ranker(Cards => HasThreeOfAKind(), HandRank.ThreeOfAKind),
+                new Ranker(Cards => HasTwoPair(), HandRank.TwoPair),
+                new Ranker(Cards => HasPair(), HandRank.Pair),
+                new Ranker(Cards => true, HandRank.HighCard)
+            };
 
         private bool HasFlush()
             => Cards.All(c => c.Suit == Cards.First().Suit);
@@ -55,16 +61,14 @@ namespace CsharpPoker
                 .GroupBy(card => card.Value)
                 .Any(group => group.Count() == howManyCards);
 
+        private bool HasTwoPair()
+            => Cards.GroupBy(card => card.Value)
+                    .Count(group => group.Count() == 2) == 2;
+
         private bool HasStraight()
             => _cards.GetMinMaxDifference() == _cards.Count - 1;
 
         private bool HasStraightFlush()
-            => HasStraight() && HasFlush();
-    }
-
-    internal static class CardListExtensions
-    {
-        internal static int GetMinMaxDifference(this List<Card> cards)
-            => cards.Max(card => card.Value) - cards.Min(card => card.Value);
+            => HasStraight() && HasFlush();        
     }
 }

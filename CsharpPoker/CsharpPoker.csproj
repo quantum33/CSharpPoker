@@ -3,4 +3,7 @@
     <TargetFramework>netcoreapp1.1</TargetFramework>
     <LangVersion>7</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.ValueTuple" Version="4.4.0" />
+  </ItemGroup>
 </Project>

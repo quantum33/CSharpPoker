@@ -28,12 +28,12 @@ namespace CsharpPokerTests
         [Fact]
         public void CanGetHighCard()
         {
-            var hand = new Hand()
-                .Draw(new Card(CardValue.Seven, CardSuit.Spades))
-                .Draw(new Card(CardValue.Ten, CardSuit.Clubs))
-                .Draw(new Card(CardValue.Five, CardSuit.Hearts))
-                .Draw(new Card(CardValue.King, CardSuit.Hearts))
-                .Draw(new Card(CardValue.Two, CardSuit.Hearts));
+            var hand = new Hand();
+            hand.Draw(new Card(CardValue.Seven, CardSuit.Spades));
+            hand.Draw(new Card(CardValue.Ten, CardSuit.Clubs));
+            hand.Draw(new Card(CardValue.Five, CardSuit.Hearts));
+            hand.Draw(new Card(CardValue.King, CardSuit.Hearts));
+            hand.Draw(new Card(CardValue.Two, CardSuit.Hearts));
 
             hand.HighCard().Value.Should().Be(CardValue.King);
             // Assert.Equal(CardValue.King, hand.HighCard().Value);
@@ -42,12 +42,12 @@ namespace CsharpPokerTests
         [Fact]
         public void CanScoreFlush()
         {
-            var hand = new Hand()
-                .Draw(new Card(CardValue.Two, CardSuit.Spades))
-                .Draw(new Card(CardValue.Three, CardSuit.Spades))
-                .Draw(new Card(CardValue.Ace, CardSuit.Spades))
-                .Draw(new Card(CardValue.Five, CardSuit.Spades))
-                .Draw(new Card(CardValue.Six, CardSuit.Spades));
+            var hand = new Hand();
+            hand.Draw(new Card(CardValue.Two, CardSuit.Spades));
+            hand.Draw(new Card(CardValue.Three, CardSuit.Spades));
+            hand.Draw(new Card(CardValue.Ace, CardSuit.Spades));
+            hand.Draw(new Card(CardValue.Five, CardSuit.Spades));
+            hand.Draw(new Card(CardValue.Six, CardSuit.Spades));
 
             hand.GetHandRank().Should().Be(HandRank.Flush);
         }
@@ -137,6 +137,19 @@ namespace CsharpPokerTests
             hand.Draw(new Card(CardValue.King, CardSuit.Hearts));
 
             hand.GetHandRank().Should().Be(HandRank.Straight);
+        }
+        
+        [Fact]
+        public void CanScoreTwoPair()
+        {
+            var hand = new Hand();
+            hand.Draw(new Card(CardValue.Ace, CardSuit.Clubs));
+            hand.Draw(new Card(CardValue.Ten, CardSuit.Spades));
+            hand.Draw(new Card(CardValue.Nine, CardSuit.Spades));
+            hand.Draw(new Card(CardValue.Ten, CardSuit.Hearts));
+            hand.Draw(new Card(CardValue.Ace, CardSuit.Spades));
+
+            hand.GetHandRank().Should().Be(HandRank.TwoPair);
         }
     }
 }
