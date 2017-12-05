@@ -1,0 +1,2 @@
+# CSharpPoker
+Functional programming ignition!
